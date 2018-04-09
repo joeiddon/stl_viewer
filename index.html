@@ -1,0 +1,80 @@
+<html>
+<head>
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: #fff;
+}
+#cont {
+    width: 800px;
+    margin: auto;
+}
+#inpt {
+    display: none;
+}
+#entry {
+    text-align: center;
+    text-decoration: underline;
+    background-color: #fff;
+    color: #000;
+    font-size: 48px;
+    padding: 5px;
+    border: 1px solid #fff;
+}
+#entry:hover {
+    cursor: pointer;
+    background-color: #000;
+    color: #fff;
+}
+#disp {
+    display: none;
+    font-family: monospace;
+    font-size: 18px;
+}
+#cnvs {
+    float: left;
+    cursor: -webkit-grabbing;
+}
+#settings {
+    height: 100%;
+}
+input[type='range'] {
+    display: block;
+    margin: auto;
+}
+#sliders {
+    text-align: center;
+}
+</style>
+<script src='http://joeiddon.me/zengine/zengine.js'></script>
+</head>
+<body>
+<div id='cont'>
+    <h style='font-size: 64; text-align: center;'>STL Viewer</h>
+    <p>This webapp allows you to view any stl file directly in the broswer, client-side. All the code was written by me and can be found over on <a href='https://github.com/RoadKillCat/stl_viewer'>GitHub</a>. Feel free to have a look - it's ownly about 200 lines long.</p>
+    <p>For the 3D rendering, I am using my 3D JavaScript engine - <a href='https://github.com/RoadKillCat/zengine'>zengine.js</a>. It is not as efficient as other libraries, but I wrote it entirely by myself and so I know exactly how it works and what is going on. However due to this, <b>large <i>.stl</i> files are slow to render.</b></p>
+    <p>Click the button below to load in your file.</p>
+    <br><br>
+    <label for='inpt' id='entry'>select <i>.stl</i></label>
+    <input id='inpt' type='file' accept='.stl'></input>
+</div>
+<div id='disp'>
+    <canvas id='cnvs'></canvas>
+    <div id='settings'>
+        <h style='font-size: 20px;'>Adjust your parameters here</h>
+        <br><br>
+        <input id='wrfrm' type='checkbox' onchange='wireframe=this.checked; update();' checked></input>
+        <label for='wrfrm'>wireframe</label>
+        <br><br>
+        <div id='sliders'>
+            <label for='dst'>distance from object</label>
+            <br>
+            <input id='dst' type='range' min='0' value='40' max='200' oninput='cam.y=-this.value;update();'></input>
+        </div>
+    </div>
+</div>
+<script src='script.js'></script>
+</body>
+</html>
