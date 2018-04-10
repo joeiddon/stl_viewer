@@ -4,7 +4,6 @@ let cont = document.getElementById('cont');
 let inpt = document.getElementById('inpt');
 let disp = document.getElementById('disp');
 let cnvs = document.getElementById('cnvs');
-let ctx = cnvs.getContext('2d');
 let settings = document.getElementById('settings');
 
 let world = [];
@@ -23,7 +22,7 @@ for (var i = 0; i < inputs.length; i++){
 inpt.addEventListener('change', function (e){
     let r = new FileReader();
     r.onload = function(){
-        world = read_binary_stl(this.result);
+        parse_stl(this.result);
         center_world();
         disp.style.display = 'block';
         cont.style.display = 'none';
@@ -34,6 +33,19 @@ inpt.addEventListener('change', function (e){
     }
     r.readAsArrayBuffer(e.target.files[0]);
 });
+
+function parse_stl(f){
+    let b_arr = new Uint8Array(f);
+    let s = '';
+    for (let i = 0; i < 5; i++){
+        s += String.fromCharCode(b_arr[i]);
+    }
+    if (s == 'solid'){
+        parse_ascii(f);
+    } else {
+        parse_bin(f);
+    }
+}
 
 function update(){
     zengine.render(world, cam, cnvs, wireframe);
@@ -54,13 +66,33 @@ function center_world(){
                            col: f.col}));
 }
 
-function read_binary_stl(f){
+function parse_ascii(f){
+    world = [];
+    let b_arr = new Uint8Array(f);
+    let ascii = '';
+    for (let i = 0; i < b_arr.length; i++){
+        ascii += String.fromCharCode(b_arr[i]);
+    }
+    let re = /-?[0-9]+\.?[0-9]*(e-?[0-9]+\.?[0-9]*)?/g;
+    let nums = ascii.match(re);
+    for (let f = 0; f < nums.length; f += 12){
+        let verts = [];
+        for (let v = 3; v < 12; v +=3){
+            verts.push({x: parseFloat(nums[f+v]),
+                        y: parseFloat(nums[f+v+1]),
+                        z: parseFloat(nums[f+v+2])});
+        }
+        world.push({verts: verts, col: '#fff'});
+    }
+}
+
+function parse_bin(f){
     let dv = new DataView(f);
     //assuming binary .stl file, add in ASCII support later
     let pointer = 80;
     let no_faces = dv.getUint32(pointer, true);
     pointer += 4;
-    let world = [];
+    world = [];
     for (let f = 0; f < no_faces; f++){
         let verts = [];
         pointer += 12;
@@ -75,7 +107,6 @@ function read_binary_stl(f){
         if (atbc != 0) throw Error('attribute byte count not 0');
         pointer += 2;
     }
-    return world;
 }
 
 /*  mouse events  */
