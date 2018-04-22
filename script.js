@@ -5,11 +5,13 @@ let inpt = document.getElementById('inpt');
 let disp = document.getElementById('disp');
 let cnvs = document.getElementById('cnvs');
 let settings = document.getElementById('settings');
+let dst = document.getElementById('dst');
 
 let world = [];
 let wireframe = true;
 let cam = {x: 0, y: -40, z: 0, yaw: 0, pitch: 0, roll: 0, fov: 60};
-let m_damp = 400;
+let mm_damp = 128;
+let ms_damp = 20;
 let set_w = 400;
 
 let inputs = document.getElementsByTagName('input');
@@ -30,6 +32,7 @@ inpt.addEventListener('change', function (e){
         update();
         window.addEventListener('resize', resize);
         cnvs.addEventListener('mousedown', md);
+        cnvs.addEventListener('mousewheel', ms);
     }
     r.readAsArrayBuffer(e.target.files[0]);
 });
@@ -125,11 +128,17 @@ function mu(){
 }
 
 function mm(e){
-    var dx = e.movementX / m_damp;
-    var dy = e.movementY / m_damp;
+    var dx = e.movementX / mm_damp;
+    var dy = e.movementY / mm_damp;
     world = world.map(f=>({verts: f.verts.map(zengine.z_axis_rotate(dx))
                                          .map(zengine.x_axis_rotate(dy * -1)),
                            col: f.col}));
+    update();
+}
+
+function ms(e){
+    cam.y += e.deltaY / ms_damp;
+    dst.value = -cam.y;
     update();
 }
 
