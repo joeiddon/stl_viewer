@@ -170,5 +170,6 @@ function resize(){
 }
 
 function generate_file(){
-    dwnld_a.href = URL.createObjectURL(new Blob([JSON.stringify(world)], {type: 'text/plain'}));
+    dwnld_a.download = inpt.files[0].name.replace('.stl','.json');
+    dwnld_a.href = URL.createObjectURL(new Blob([JSON.stringify(world)], {type: 'text/json'}));
 }
